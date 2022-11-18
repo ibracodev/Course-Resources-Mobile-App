@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "172775232723",
+    "project_id": "course-resources-and-database",
+    "storage_bucket": "course-resources-and-database.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:172775232723:android:6b1b7904d481ee8bdf7026",
+        "android_client_info": {
+          "package_name": "com.project.coursesdatabase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "172775232723-vic2ao1blh0qkndt6gg3lra774jlg2j2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-QIK4Os7L7prps4142iJVDyI9NlMgcr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "172775232723-vic2ao1blh0qkndt6gg3lra774jlg2j2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
