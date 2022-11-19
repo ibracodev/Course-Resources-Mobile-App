@@ -151,39 +151,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 progressDialog.dismiss();
 
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e)
             {
-
                 // Error, Image not uploaded
                 progressDialog.dismiss();
-                Toast
-                        .makeText(MainActivity.this,
-                                "Failed " + e.getMessage(),
-                                Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(MainActivity.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        })
-                .addOnProgressListener(
-                        new OnProgressListener<UploadTask.TaskSnapshot>() {
-
-                            // Progress Listener for loading
-                            // percentage on the dialog box
-                            @Override
-                            public void onProgress(
-                                    UploadTask.TaskSnapshot taskSnapshot)
-                            {
-                                double progress
-                                        = (100.0
-                                        * taskSnapshot.getBytesTransferred()
-                                        / taskSnapshot.getTotalByteCount());
-                                progressDialog.setMessage(
-                                        "Uploaded "
-                                                + (int)progress + "%");
-                            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            // Progress Listener for loading
+            // percentage on the dialog box
+            @Override
+            public void onProgress(
+                    UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                progressDialog.setMessage(
+                        "Uploaded "
+                                + (int)progress + "%");
+            }
                         });
 
     }
@@ -245,7 +232,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return result;
     } //from https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
-
-
-
 }
