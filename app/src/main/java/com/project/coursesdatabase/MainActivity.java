@@ -24,6 +24,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //FirebaseStorage storage;
     StorageReference storageReference;
-    //DatabaseReference databaseReference;
+    DatabaseReference databaseReference;
 
     Button btn_upload,btn_download;
     TextView name;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //Database
         storageReference = FirebaseStorage.getInstance().getReference();
-        //databaseReference = FirebaseDatabase.getInstance().getReference("Uploads");
+        databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
 
         btn_upload.setOnClickListener(this);
         btn_download.setOnClickListener(this);
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 course_name=s.getSelectedItem().toString();
 
             }
+            databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
             selectFiles();
 
         }
@@ -149,6 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ref.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+               Task<Uri> uri= taskSnapshot.getStorage().getDownloadUrl();
+               while(!uri.isComplete());
+                   Uri url=uri.getResult();
+
+               FileClass fclass= new FileClass(getFileName(data),url.toString());
+               databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
                 progressDialog.dismiss();
 
             }
@@ -171,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         "Uploaded "
                                 + (int)progress + "%");
             }
-                        });
+
+        });
 
     }
 
@@ -196,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             course_name=s.getSelectedItem().toString();
             r.setVisibility(View.INVISIBLE);
         }
+        databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
     }
 
     @Override
