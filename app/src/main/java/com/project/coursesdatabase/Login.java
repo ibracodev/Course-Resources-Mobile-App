@@ -29,6 +29,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        getSupportActionBar().setTitle("Login or Sign Up");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -54,13 +56,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d(TAG, "createUserWithEmail:success");
-                                Toast.makeText(Login.this, "Created user " + email, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Login.this, "Created User : " + email.getText(), Toast.LENGTH_SHORT).show();
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 //updateUI(user);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(Login.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Login.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                                 //updateUI(null);
                             }
                         }
@@ -82,7 +84,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(Login.this, "Authentication failed.",
+                                Toast.makeText(Login.this, "Authentication Failed",
                                         Toast.LENGTH_SHORT).show();
                                 //updateUI(null);
                             }

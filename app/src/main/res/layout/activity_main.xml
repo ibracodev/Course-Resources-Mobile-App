@@ -9,39 +9,82 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:layout_marginTop="100dp"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload File!"
-            android:textColor="#000000"
+            android:text="Select Course"
+            android:textColor="#8BC34A"
             android:textSize="34sp" />
     </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="20dp"
         android:gravity="center">
 
-        <TextView
-            android:id="@+id/filename"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/courses_list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/course_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/cname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Enter Course Name" />
+
+        <EditText
+            android:id="@+id/c_name_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="1"
+            android:text="Download/View Previous"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Upload Previous"
+            android:textSize="12sp" />
 
     </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:layout_margin="20dp">
 
-        <Button
-            android:id="@+id/btn_upload"
+        <TextView
+            android:id="@+id/filename"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="upload" />
-
+            android:layout_height="wrap_content" />
     </TableRow>
 
 </TableLayout>

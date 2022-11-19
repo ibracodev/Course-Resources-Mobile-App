@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Courses Database Project</string>
+    <string-array name="courses_list">
+        <item>Operating Systems</item>
+        <item>Introduction to Macroeconomics</item>
+        <item>Mobile Application Development</item>
+        <item>Artificial Intelligence</item>
+        <item>Course not in this list</item>
+    </string-array>
+
 </resources>
