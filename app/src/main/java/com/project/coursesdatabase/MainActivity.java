@@ -1,5 +1,5 @@
 package com.project.coursesdatabase;
-
+// Parts of the Code Adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +32,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
+import java.util.*;
+import java.text.*;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemSelectedListener, TextView.OnEditorActionListener {
@@ -44,11 +45,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference databaseReference;
 
     Button btn_upload,btn_download;
-    TextView name;
-    EditText c_name_field;
+
+    EditText c_name_field,descc;
+    String Description="No Description";
     Spinner s;
     TableRow r;
     String course_name="default";// Name of course/Folder in Storage
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +59,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        getSupportActionBar().setTitle("Welcome: " + intent.getStringExtra("username"));
+        username=intent.getStringExtra("username");
+        getSupportActionBar().setTitle("Welcome: " + username);
         db = FirebaseFirestore.getInstance();
 
         btn_upload = findViewById(R.id.btn_upload);
         btn_download=findViewById(R.id.btn_d);
         s=findViewById(R.id.courses_list);
-        name = findViewById(R.id.filename);
+
         r=findViewById(R.id.course_row);
         c_name_field=findViewById(R.id.c_name_field);
-
+        descc=findViewById(R.id.desc);
         //Database
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
@@ -105,31 +109,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
         if (view.getId()== R.id.btn_d){
-            StorageReference downloadReference=FirebaseStorage.getInstance().getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/course-resources-and-database.appspot.com/o/Artificial%20Intelligence%2FClassification_of_Breast_Cancer_Images_by_Transfer_Learning_Approach_Using_Different_Patching_Sizes.pdf?alt=media&token=d197e559-7012-4d9f-9db7-f635f9a43070");
-            final long ONE_MEGABYTE = 1024 * 1024;
-            downloadReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    Toast
-                            .makeText(MainActivity.this,
-                                    "Download Suceeded!!",
-                                    Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Toast
-                            .makeText(MainActivity.this,
-                                    "Download Failed : " +exception.getMessage(),
-                                    Toast.LENGTH_SHORT)
-                            .show();
 
-                    Log.d("error",exception.getMessage());
-                }
-            });
+          Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
+          intent.putExtra("CourseName",course_name);
+          startActivity(intent);
 
-        //Code Adapted from https://firebase.google.com/docs/storage/android/download-files#:~:text=To%20download%20a%20file%2C%20first,an%20object%20in%20Cloud%20Storage.
+
         }
     }
 
@@ -142,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void UploadFiles(Uri data){
         Log.d("UPLOAD FILE", data.getPath());
-        name.setText(getFileName(data));
 
         ProgressDialog progressDialog
                 = new ProgressDialog(this);
@@ -158,6 +142,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                    Uri url=uri.getResult();
 
                FileClass fclass= new FileClass(getFileName(data),url.toString());
+               fclass.setUsername("Uploaded by "+username);
+               fclass.setUploadtime(getTimeandDate());
+               if(!descc.getText().toString().isEmpty()){
+                   Description=descc.getText().toString();
+               }
+               fclass.setDescc(Description);
                databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
                 progressDialog.dismiss();
 
@@ -244,4 +234,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return result;
     } //from https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
+
+    String getTimeandDate(){
+        // adapted from https://stackoverflow.com/questions/1305350/how-to-get-the-current-date-and-time-of-your-timezone-in-java
+        Date date = new Date();
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("GMT+4:00"));
+        String d="Uploaded on "+df.format(date)+" GST";
+        return d;
+    }
+
+
+
 }
