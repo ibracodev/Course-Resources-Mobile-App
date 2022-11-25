@@ -45,13 +45,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference databaseReference;
 
     Button btn_upload,btn_download;
-
     EditText c_name_field,descc;
-    String Description="No Description";
-    Spinner s;
+    Spinner courseListSpinner;
     TableRow r;
+
+
     String course_name="default";// Name of course/Folder in Storage
     String username;
+    String Description="No Description";
+
+    Boolean newCourse = false;
+    ArrayList<String>CourseNames = new ArrayList<String>();
+    ArrayAdapter<CharSequence> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btn_upload = findViewById(R.id.btn_upload);
         btn_download=findViewById(R.id.btn_d);
-        s=findViewById(R.id.courses_list);
+        courseListSpinner=findViewById(R.id.courses_list);
 
         r=findViewById(R.id.course_row);
         c_name_field=findViewById(R.id.c_name_field);
@@ -77,36 +82,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_upload.setOnClickListener(this);
         btn_download.setOnClickListener(this);
 
-        ArrayAdapter<CharSequence> adapter =
-                ArrayAdapter.createFromResource(
-                        this,
-                        R.array.courses_list,
-                        android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
-        s.setAdapter(adapter);
+        CourseNames.add("Operating Systems");
+        CourseNames.add("Introduction to Macroeconomics");
+        CourseNames.add("None of the Above");
+
+        adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, CourseNames);
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.courses_list, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        courseListSpinner.setAdapter(adapter);
         r.setVisibility(View.INVISIBLE);
-        s.setOnItemSelectedListener(this);
+        courseListSpinner.setOnItemSelectedListener(this);
 
     }
 
     @Override
     public void onClick(View view) {
+
+        //upload button
         if (view.getId()== R.id.btn_upload){
+            int n=courseListSpinner.getAdapter().getCount();
 
-
-            int n=s.getAdapter().getCount();
-            if(s.getSelectedItemPosition()==n-1){
+            if(courseListSpinner.getSelectedItemPosition()==n-1){
                 course_name=c_name_field.getText().toString();
-
             }
-            else{
-                course_name=s.getSelectedItem().toString();
-
+            else {
+                course_name = courseListSpinner.getSelectedItem().toString();
             }
+
             databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
             selectFiles();
-
         }
         if (view.getId()== R.id.btn_d){
 
@@ -114,43 +118,69 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
           intent.putExtra("CourseName",course_name);
           startActivity(intent);
 
-
         }
     }
 
     public void selectFiles(){
+        //opens the file manager on your phone to select and upload files
         Intent intent = new Intent();
         intent.setType("*/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select a file to upload"), 1);
     }
 
+    //when files are selected the upload function is called
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+            UploadFiles(data.getData());
+        }
+    }
+
+    //upload function
     public void UploadFiles(Uri data){
         Log.d("UPLOAD FILE", data.getPath());
 
-        ProgressDialog progressDialog
-                = new ProgressDialog(this);
+        //displays progress of the upload to the user
+        ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Uploading...");
         progressDialog.show();
-        StorageReference ref = storageReference.child(course_name +"/"+ getFileName(data));
 
+        //placing in the storage
+        StorageReference ref = storageReference.child(course_name +"/"+ getFileName(data));
+        //uploading to firebase
         ref.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                Task<Uri> uri= taskSnapshot.getStorage().getDownloadUrl();
                while(!uri.isComplete());
-                   Uri url=uri.getResult();
+               Uri url=uri.getResult();
 
                FileClass fclass= new FileClass(getFileName(data),url.toString());
                fclass.setUsername("Uploaded by "+username);
                fclass.setUploadtime(getTimeandDate());
+
                if(!descc.getText().toString().isEmpty()){
                    Description=descc.getText().toString();
                }
+
                fclass.setDescc(Description);
                databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
-                progressDialog.dismiss();
+               progressDialog.dismiss();
 
+               if (newCourse == true) {
+                   int n=courseListSpinner.getAdapter().getCount();
+                   CourseNames.remove(n - 1);
+                   CourseNames.add(c_name_field.getText().toString());
+                   CourseNames.add("None of the Above");
+                   adapter.notifyDataSetChanged();
+                   courseListSpinner.setAdapter(adapter);
+                   newCourse =false;
+               }
+               Toast.makeText(MainActivity.this, fclass.getName() + " Uploaded!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -176,25 +206,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
-
-            UploadFiles(data.getData());
-        }
-    }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        int n=s.getAdapter().getCount();
-        if(s.getSelectedItemPosition()==n-1){
-            r.setVisibility(View.VISIBLE);
+        int n=courseListSpinner.getAdapter().getCount();
 
+        if(courseListSpinner.getSelectedItemPosition()==n-1){
+            r.setVisibility(View.VISIBLE);
+            newCourse = true;
         }
         else{
-            course_name=s.getSelectedItem().toString();
+            course_name = courseListSpinner.getSelectedItem().toString();
             r.setVisibility(View.INVISIBLE);
         }
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
@@ -213,6 +235,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
+
+
     public String getFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
@@ -243,7 +267,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String d="Uploaded on "+df.format(date)+" GST";
         return d;
     }
-
 
 
 }
