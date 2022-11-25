@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -82,9 +83,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_upload.setOnClickListener(this);
         btn_download.setOnClickListener(this);
 
-        CourseNames.add("Operating Systems");
-        CourseNames.add("Introduction to Macroeconomics");
-        CourseNames.add("None of the Above");
+//        CourseNames.add("Operating Systems");
+//        CourseNames.add("Introduction to Macroeconomics");
+//        CourseNames.add("None of the Above");
+
+
+        StorageReference listRef = FirebaseStorage.getInstance().getReference("/");
+
+        listRef.listAll()
+                .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+                    @Override
+                    public void onSuccess(ListResult listResult) {
+
+                        Log.d("FirebaseList", listRef.getName());
+                        for (StorageReference prefix : listResult.getPrefixes()) {
+                            Log.d("FirebaseList", prefix.getName());
+                            // This will give you a folder name
+                            // You may call listAll() recursively on them.
+                            CourseNames.add(prefix.getName());
+                        }
+
+                        //for (StorageReference item : listResult.getItems()) {
+                            // All the items under listRef.
+                        //}
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Uh-oh, an error occurred!
+                    }
+                });
+
 
         adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, CourseNames);
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.courses_list, android.R.layout.simple_spinner_item);
