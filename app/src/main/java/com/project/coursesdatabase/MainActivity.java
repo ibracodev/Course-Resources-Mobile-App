@@ -217,6 +217,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //courseListSpinner.setAdapter(adapter);
                     newCourse =false;
                 }
+
+
                 Toast.makeText(MainActivity.this, fclass.getName() + " Uploaded!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -307,4 +309,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    public void sendNotificatio(){
+
+    }
 }

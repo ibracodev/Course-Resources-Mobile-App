@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.project.coursesdatabase"
-        minSdk 22
+        minSdk 26
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -44,6 +44,7 @@ dependencies {
     //implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-messaging'
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
 }
