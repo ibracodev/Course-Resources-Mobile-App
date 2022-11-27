@@ -39,6 +39,8 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemSelectedListener, TextView.OnEditorActionListener {
 
+    String TAG = "MainActivity";
+
     static FirebaseFirestore db;
 
     //FirebaseStorage storage;
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        CourseNames.add("Introduction to Macroeconomics");
 //        CourseNames.add("None of the Above");
 
-
+        Log.d(TAG, "on create" );
         StorageReference listRef = FirebaseStorage.getInstance().getReference("/");
 
         //source https://stackoverflow.com/questions/52715924/how-i-can-get-list-of-name-of-folder-in-firebase-storage-android
@@ -102,10 +104,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // This will give you a folder name
                             // You may call listAll() recursively on them.
                             CourseNames.add(prefix.getName());
+                            Log.d(TAG, "course name " + prefix.getName());
+                            adapter.notifyDataSetChanged();
                         }
-
+                        CourseNames.add("None of the above");
+                        adapter.notifyDataSetChanged();
                         //for (StorageReference item : listResult.getItems()) {
-                            // All the items under listRef.
+                        // All the items under listRef.
                         //}
                     }
                 })
@@ -118,12 +123,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, CourseNames);
+        Log.d(TAG, "array adapter set");
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.courses_list, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         courseListSpinner.setAdapter(adapter);
         r.setVisibility(View.INVISIBLE);
         courseListSpinner.setOnItemSelectedListener(this);
-
+        Log.d(TAG, "done");
     }
 
     @Override
@@ -145,9 +151,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (view.getId()== R.id.btn_d){
 
-          Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
-          intent.putExtra("CourseName",course_name);
-          startActivity(intent);
+            Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
+            intent.putExtra("CourseName",course_name);
+            startActivity(intent);
 
         }
     }
@@ -186,32 +192,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-               Task<Uri> uri= taskSnapshot.getStorage().getDownloadUrl();
-               while(!uri.isComplete());
-               Uri url=uri.getResult();
+                Task<Uri> uri= taskSnapshot.getStorage().getDownloadUrl();
+                while(!uri.isComplete());
+                Uri url=uri.getResult();
 
-               FileClass fclass= new FileClass(getFileName(data),url.toString());
-               fclass.setUsername("Uploaded by "+username);
-               fclass.setUploadtime(getTimeandDate());
+                FileClass fclass= new FileClass(getFileName(data),url.toString());
+                fclass.setUsername("Uploaded by "+username);
+                fclass.setUploadtime(getTimeandDate());
 
-               if(!descc.getText().toString().isEmpty()){
-                   Description=descc.getText().toString();
-               }
+                if(!descc.getText().toString().isEmpty()){
+                    Description=descc.getText().toString();
+                }
 
-               fclass.setDescc(Description);
-               databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
-               progressDialog.dismiss();
+                fclass.setDescc(Description);
+                databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
+                progressDialog.dismiss();
 
-               if (newCourse == true) {
-                   int n=courseListSpinner.getAdapter().getCount();
-                   CourseNames.remove(n - 1);
-                   CourseNames.add(c_name_field.getText().toString());
-                   CourseNames.add("None of the Above");
-                   adapter.notifyDataSetChanged();
-                   courseListSpinner.setAdapter(adapter);
-                   newCourse =false;
-               }
-               Toast.makeText(MainActivity.this, fclass.getName() + " Uploaded!", Toast.LENGTH_SHORT).show();
+                if (newCourse == true) {
+                    int n=courseListSpinner.getAdapter().getCount();
+                    CourseNames.remove(n - 1);
+                    CourseNames.add(c_name_field.getText().toString());
+                    CourseNames.add("None of the Above");
+                    adapter.notifyDataSetChanged();
+                    //courseListSpinner.setAdapter(adapter);
+                    newCourse =false;
+                }
+                Toast.makeText(MainActivity.this, fclass.getName() + " Uploaded!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -227,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onProgress(
                     UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
+                double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 progressDialog.setMessage(
                         "Uploaded "
                                 + (int)progress + "%");
@@ -242,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int n=courseListSpinner.getAdapter().getCount();
 
+        adapter.notifyDataSetChanged();
         if(courseListSpinner.getSelectedItemPosition()==n-1){
             r.setVisibility(View.VISIBLE);
             newCourse = true;
