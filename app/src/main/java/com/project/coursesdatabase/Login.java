@@ -44,9 +44,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         btn_login.setOnClickListener(this);
         btn_signup.setOnClickListener(this);
 
-        mAuth.addAuthStateListener(authStateListener);
+        //mAuth.addAuthStateListener(authStateListener);
     }
-
 
     //https://stackoverflow.com/questions/50885891/one-time-login-in-app-firebaseauth
     FirebaseAuth.AuthStateListener authStateListener = firebaseAuth -> {
