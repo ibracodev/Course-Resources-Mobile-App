@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +20,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +31,17 @@ import java.text.*;
 //Following reference was used for the parts of code below : https://www.youtube.com/watch?v=axChfqYiZwc
 
 
-public class ViewFiles extends AppCompatActivity {
+public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
     ListView list;
     DatabaseReference dbref;
     ArrayList<FileClass> files;
     String cname;
 
+    Spinner yearSpinner;
     TextView coursename;
+    String year = "2020"; //random value set as default
+    CustomArrayAdapter adapter;
+    SearchView search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +50,25 @@ public class ViewFiles extends AppCompatActivity {
 
         list=findViewById(R.id.course_List);
         coursename = findViewById(R.id.courseTitletxt);
+        yearSpinner = findViewById(R.id.yearSpin);
+        search = findViewById(R.id.searchView);
 
         Intent intent = getIntent();
         cname=intent.getStringExtra("CourseName");
-        getSupportActionBar().setTitle("Previouses for " + cname);
+        getSupportActionBar().setTitle("Viewing Previouses for " + cname);
 
         files=new ArrayList<FileClass>();
         coursename.setText("Previouses For " + cname);
 
+        ArrayAdapter<CharSequence> yearadapter = ArrayAdapter.createFromResource(this, R.array.years_list,
+                android.R.layout.simple_spinner_item);
+        yearadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        yearSpinner.setAdapter(yearadapter);
+        yearSpinner.setOnItemSelectedListener(this);
+
         view_all_files();
+
+        search.setOnQueryTextListener(this);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -66,10 +84,9 @@ public class ViewFiles extends AppCompatActivity {
 
     }
 
-
     private void view_all_files(){
 
-        dbref= FirebaseDatabase.getInstance().getReference(cname);
+        dbref= FirebaseDatabase.getInstance().getReference(cname);//+"/"+year);
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -77,13 +94,10 @@ public class ViewFiles extends AppCompatActivity {
                     FileClass f=d.getValue(FileClass.class);
                     files.add(f);
                 }
-
-                CustomArrayAdapter adapter = new  CustomArrayAdapter(getApplicationContext(), files);
-                ListView listView = (ListView) findViewById(R.id.course_List);
+                adapter = new CustomArrayAdapter(getApplicationContext(), files);
+                //ListView listView = (ListView) findViewById(R.id.course_List);
                 list.setAdapter(adapter);
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -93,4 +107,28 @@ public class ViewFiles extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        year = yearSpinner.getSelectedItem().toString();
+        view_all_files();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+
+
+        return false;
+    }
+    //https://stackoverflow.com/questions/21827646/how-to-implement-search-in-custom-listview-in-android
 }

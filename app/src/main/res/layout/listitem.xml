@@ -15,13 +15,16 @@
             android:layout_margin="5sp">
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/doctitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="1"
                 android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
                 android:text="TextView"
+                android:textColor="#000000"
                 android:textSize="16sp" />
+
         </TableRow>
 
         <TableRow
@@ -30,12 +33,13 @@
             android:layout_margin="5sp">
 
             <TextView
-                android:id="@+id/doctitle"
+                android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="1"
                 android:layout_weight="1"
                 android:text="TextView"
+                android:textColor="#000000"
                 android:textSize="16sp" />
         </TableRow>
 
@@ -52,6 +56,7 @@
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
                 android:text="TextView"
+                android:textColor="#000000"
                 android:textSize="12sp" />
 
         </TableRow>
@@ -67,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="TextView"
+                android:textColor="#000000"
                 android:textSize="12sp" />
         </TableRow>
 

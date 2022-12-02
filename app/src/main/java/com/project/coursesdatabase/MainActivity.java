@@ -184,9 +184,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             else {
                 course_name = courseListSpinner.getSelectedItem().toString();
             }
-
-            databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
-            selectFiles();
+            //databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
+            Intent uploadIntent = new Intent(this, UploadFiles.class);
+            uploadIntent.putExtra("CourseName", course_name);
+            uploadIntent.putExtra("Username", username);
+            startActivity(uploadIntent);
+            //selectFiles();
         }
         if (view.getId()== R.id.btn_d){
 

@@ -15,7 +15,46 @@
               android:id="@+id/courseTitletxt"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:text="TextView" />
+              android:layout_span="2"
+              android:fontFamily="sans-serif-black"
+              android:gravity="center"
+              android:paddingBottom="10sp"
+              android:text="TextView"
+              android:textColor="#000000"
+              android:textSize="24sp" />
+     </TableRow>
+
+     <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:gravity="center"
+         android:paddingBottom="10sp">
+
+          <TextView
+              android:id="@+id/textView2"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:fontFamily="sans-serif-black"
+              android:text="Select the Year"
+              android:textColor="#000000"
+              android:textSize="20sp" />
+
+          <Spinner
+              android:id="@+id/yearSpin"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" />
+
+     </TableRow>
+
+     <TableRow
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:gravity="center">
+
+          <SearchView
+              android:id="@+id/searchView"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" />
      </TableRow>
 
      <TableRow
@@ -26,7 +65,8 @@
           <ListView
               android:id="@+id/course_List"
               android:layout_width="match_parent"
-              android:layout_height="match_parent" />
+              android:layout_height="match_parent"
+              android:layout_span="2" />
      </TableRow>
 
 
