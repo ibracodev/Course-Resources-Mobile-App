@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +26,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -41,14 +45,14 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     Spinner years;
     Button upload;
     EditText description;
-
+    private FirebaseAuth mAuth;
     //FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
     String course_name="default";// Name of course/Folder in Storage
     String username ="";
     String desc = "No Description";
-    String year = "2000";
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +71,15 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
 
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        username=user.getEmail().toString();
         Intent intent = getIntent();
-        username=intent.getStringExtra("Username");
         getSupportActionBar().setTitle("Welcome: " + username);
 
         course_name= intent.getStringExtra("CourseName");
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
-
+        mAuth = FirebaseAuth.getInstance();
         upload.setOnClickListener(this);
         years.setOnItemSelectedListener(this);
     }
@@ -114,7 +120,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
         progressDialog.show();
 
         //placing in the storage
-        StorageReference ref = storageReference.child(course_name +"/" + year + "/" +getFileName(data));
+        StorageReference ref = storageReference.child(course_name +"/" + years.getSelectedItem().toString() + "/" +getFileName(data));
         //uploading to firebase
         ref.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -133,6 +139,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
                 }
 
                 fclass.setDescc(desc);
+                fclass.setYearuploaded(years.getSelectedItem().toString());
                 databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
                 progressDialog.dismiss();
 
@@ -161,6 +168,37 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
 
         });
 
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(
+                R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.logoutMenu:
+                mAuth.signOut();
+                Intent login= new Intent(this, Login.class);
+                Toast.makeText(this, "Logging Out",
+                        Toast.LENGTH_SHORT).show();
+                startActivity(login);
+                return true;
+            case R.id.profileMenu:
+                Intent profile = new Intent(this, ProfileActivity.class);
+                startActivity(profile);
+                Toast.makeText(this, "Profile",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public String getFileName(Uri uri) {
@@ -196,7 +234,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        year = years.getSelectedItem().toString();
+
     }
 
     @Override

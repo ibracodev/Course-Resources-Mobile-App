@@ -22,7 +22,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     Button btn_login, btn_signup;
     EditText email, password;
-
+    String msg="";
     String TAG = "LoginActivity";
 
     private FirebaseAuth mAuth;
@@ -43,21 +43,26 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         btn_login.setOnClickListener(this);
         btn_signup.setOnClickListener(this);
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+          //  https://stackoverflow.com/questions/56163255/stay-logged-in-with-firebase-to-the-app-when-closed
+        }
         //mAuth.addAuthStateListener(authStateListener);
     }
 
     //https://stackoverflow.com/questions/50885891/one-time-login-in-app-firebaseauth
-    FirebaseAuth.AuthStateListener authStateListener = firebaseAuth -> {
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-        if (firebaseUser.getEmail() != null) {
-            Log.d("Firebase User", "user is not null");
-            Log.d("Firebase User", firebaseUser.getIdToken(true) +"");
-            //Intent intent = new Intent(Login.this, MainActivity.class);
-            //startActivity(intent);
-            //finish();
-        }
-    };
+//    FirebaseAuth.AuthStateListener authStateListener = firebaseAuth -> {
+//        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+//        if (firebaseUser.getEmail() != null) {
+//            Log.d("Firebase User", "user is not null");
+//            Log.d("Firebase User", firebaseUser.getIdToken(true) +"");
+//            //Intent intent = new Intent(Login.this, MainActivity.class);
+//            //startActivity(intent);
+//            //finish();
+//        }
+//    };
     //it is returning a user logged in because firebase uses idtokens and not actual users
     //current log is showing the idtoken com.google.android.gms.tasks.zzw@379aadb logged in but we only want the autherized users to login
     // refer to this: https://stackoverflow.com/questions/54338834/android-studio-i-am-always-logged-in-although-there-are-no-users-in-my-firebas

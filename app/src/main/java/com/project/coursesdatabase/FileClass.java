@@ -8,6 +8,7 @@ public class FileClass {
     String username;
     String uploadtime;
     String descc;
+    String yearuploaded;
 
 
     public FileClass(String name, String url) {
@@ -57,5 +58,13 @@ public class FileClass {
 
     public void setDescc(String descc) {
         this.descc = descc;
+    }
+
+    public String getYearuploaded() {
+        return yearuploaded;
+    }
+
+    public void setYearuploaded(String yearuploaded) {
+        this.yearuploaded = yearuploaded;
     }
 }

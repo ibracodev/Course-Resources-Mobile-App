@@ -7,6 +7,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,7 +16,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,18 +41,18 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
     DatabaseReference dbref;
     ArrayList<FileClass> files;
     String cname;
-
+    private FirebaseAuth mAuth;
     Spinner yearSpinner;
     TextView coursename;
-    String year = "2020"; //random value set as default
+    String year = "None"; //random value set as default
     CustomArrayAdapter adapter;
     SearchView search;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_files);
-
         list=findViewById(R.id.course_List);
         coursename = findViewById(R.id.courseTitletxt);
         yearSpinner = findViewById(R.id.yearSpin);
@@ -65,6 +70,8 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
         yearadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         yearSpinner.setAdapter(yearadapter);
         yearSpinner.setOnItemSelectedListener(this);
+        mAuth = FirebaseAuth.getInstance();
+
 
         view_all_files();
 
@@ -85,14 +92,17 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
     }
 
     private void view_all_files(){
-
-        dbref= FirebaseDatabase.getInstance().getReference(cname);//+"/"+year);
+        files=new ArrayList<FileClass>();
+        dbref= FirebaseDatabase.getInstance().getReference(cname);
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot d: snapshot.getChildren()){
                     FileClass f=d.getValue(FileClass.class);
-                    files.add(f);
+                    if (f.getYearuploaded().equals(yearSpinner.getSelectedItem().toString())){
+                        files.add(f);
+                    }
+
                 }
                 adapter = new CustomArrayAdapter(getApplicationContext(), files);
                 //ListView listView = (ListView) findViewById(R.id.course_List);
@@ -106,10 +116,38 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(
+                R.menu.menu, menu);
+        return true;
+    }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.logoutMenu:
+                mAuth.signOut();
+                Intent login = new Intent(this, Login.class);
+                login.putExtra("msg","Signing Out");
+                Toast.makeText(this, "Logging Out",
+                        Toast.LENGTH_SHORT).show();
+                startActivity(login);
+                return true;
+            case R.id.profileMenu:
+                Intent profile = new Intent(this, ProfileActivity.class);
+                startActivity(profile);
+                Toast.makeText(this, "Profile",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        year = yearSpinner.getSelectedItem().toString();
         view_all_files();
     }
 
