@@ -54,7 +54,7 @@ public class BackgroundService extends Service {
         // create and start timer
         timer = new Timer(true);
         int delay = 1000 ;
-        int interval = 1000; // Every 8 hours
+        int interval = 1000 * 60 * 60 * 8; // Every 8 hours
         timer.schedule(task, delay, interval);
     }
 
