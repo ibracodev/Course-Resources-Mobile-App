@@ -118,57 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         r.setVisibility(View.INVISIBLE);
         Log.d(TAG, "done");
 
-//        FileInputStream serviceAccount = null;
-//        try {
-//            //this may change for u
-//            serviceAccount = new FileInputStream("C:\\Users\\ibrah\\My_Stuff\\Uni\\Mobapp\\Project\\app\\course-resources-and-database-firebase-adminsdk-3k9vt-78390cbe03.json");
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        FirebaseOptions options = null;
-//        try {
-//            options = new FirebaseOptions.Builder()
-//                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-//                    .setDatabaseUrl("https://course-resources-and-database-default-rtdb.firebaseio.com")
-//                    .build();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        FirebaseApp.initializeApp(options);
 
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log and toast
-                        String msg = getString(R.string.msg_token_fmt, token);
-                        Log.d(TAG, msg);
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-        FirebaseMessaging.getInstance().subscribeToTopic("notification")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = "Subscribed";
-                        if (!task.isSuccessful()) {
-                            msg = "Subscribe failed";
-                        }
-                        Log.d(TAG, msg);
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
 
     }
 
