@@ -123,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
     public void onResume(){
         Log.d("bla","Onresume called");
         super.onResume();

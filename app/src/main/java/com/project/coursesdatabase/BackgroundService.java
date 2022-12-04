@@ -68,8 +68,7 @@ public class BackgroundService extends Service {
 
     {
         Intent notificationIntent = new Intent (this , MainActivity.class)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                ;
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT ;
 
@@ -77,9 +76,7 @@ public class BackgroundService extends Service {
                 notificationIntent , PendingIntent.FLAG_IMMUTABLE) ;
 
         int icon = R.drawable.logoapp ;
-
         CharSequence tickerText = "Course Resources Available" ;
-
         CharSequence contentTitle = "View Course Resources" ;
 
         CharSequence contentText = text;
@@ -90,26 +87,31 @@ public class BackgroundService extends Service {
                 getSystemService(this.NOTIFICATION_SERVICE) ;
         manager.createNotificationChannel(notificationChannel);
         Notification notifacton = new NotificationCompat
-
                 .Builder(this , "CHANNEL_ID")
-
-                .setSmallIcon(icon)
-
+                .setSmallIcon(R.drawable.uploadicon)
                 .setTicker(tickerText)
-
                 .setContentTitle(contentTitle)
-
                 .setContentText(contentText)
-
                 .setContentIntent(pendingIntent)
-
                 .setAutoCancel(true)
-
                 .setChannelId("CHANNEL_ID")
-
                 .build();
-        final int NOTIFICATION_ID =1 ;
+
+        Notification notifacton2 = new NotificationCompat
+                .Builder(this , "CHANNEL_ID")
+                .setSmallIcon(R.drawable.course_icon)
+                .setTicker("Please Do Not Use Previouses During Your Exams :)")
+                .setContentTitle("PSA")
+                .setContentText("Please Do Not Use Previouses During Your Exams :)")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setChannelId("CHANNEL_ID")
+                .build();
+
+        final int NOTIFICATION_ID =1;
+        final int NOTIFICATION_ID2 =2;
         manager.notify(NOTIFICATION_ID , notifacton);
+        manager.notify(NOTIFICATION_ID2 , notifacton2);
 
     }
 
