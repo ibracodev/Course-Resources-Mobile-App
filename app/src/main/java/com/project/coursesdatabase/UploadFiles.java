@@ -1,15 +1,21 @@
 package com.project.coursesdatabase;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
@@ -24,6 +30,7 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -31,6 +38,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -51,10 +60,14 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     //FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference databaseReference;
-    String course_name="default";// Name of course/Folder in Storage
-    String username ="";
+    String course_name = "default";// Name of course/Folder in Storage
+    String username = "";
     String desc = "No Description";
     FirebaseUser user;
+    String topic = "notification";
+    String TAG = "UploadFiles";
+    int id = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,30 +90,44 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
 
 
         user = FirebaseAuth.getInstance().getCurrentUser();
-        username=user.getEmail().toString();
+        username = user.getEmail().toString();
         Intent intent = getIntent();
         getSupportActionBar().setTitle("Welcome: " + username);
 
-        course_name= intent.getStringExtra("CourseName");
+        course_name = intent.getStringExtra("CourseName");
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
         mAuth = FirebaseAuth.getInstance();
         upload.setOnClickListener(this);
         years.setOnItemSelectedListener(this);
+
+
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Subscribed";
+                        if (!task.isSuccessful()) {
+                            msg = "Subscribe failed";
+                        }
+                        Log.d(TAG, msg);
+                        Toast.makeText(UploadFiles.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.uploadButton){
-            if(description.getText().toString().isEmpty()){
+        if (view.getId() == R.id.uploadButton) {
+            if (description.getText().toString().isEmpty()) {
                 Toast.makeText(UploadFiles.this, "Course Description cannot be empty", Toast.LENGTH_SHORT).show();
-            }
-            else {
+            } else {
                 selectFiles();
             }
         }
     }
 
-    public void selectFiles(){
+    public void selectFiles() {
         // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         //opens the file manager on your phone to select and upload files
         Intent intent = new Intent();
@@ -115,14 +142,14 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
         // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             UploadFiles(data.getData());
         }
     }
 
     //upload function
     @SuppressLint("NotConstructor")
-    public void UploadFiles(Uri data){
+    public void UploadFiles(Uri data) {
         // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         Log.d("UPLOAD FILE", data.getPath());
 
@@ -132,22 +159,22 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
         progressDialog.show();
 
         //placing in the storage
-        StorageReference ref = storageReference.child(course_name +"/" + years.getSelectedItem().toString() + "/" +getFileName(data));
+        StorageReference ref = storageReference.child(course_name + "/" + years.getSelectedItem().toString() + "/" + getFileName(data));
         //uploading to firebase
         ref.putFile(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                Task<Uri> uri= taskSnapshot.getStorage().getDownloadUrl();
-                while(!uri.isComplete());
-                Uri url=uri.getResult();
+                Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uri.isComplete()) ;
+                Uri url = uri.getResult();
 
-                FileClass fclass= new FileClass(getFileName(data),url.toString());
-                fclass.setUsername("Uploaded by "+username);
+                FileClass fclass = new FileClass(getFileName(data), url.toString());
+                fclass.setUsername("Uploaded by " + username);
                 fclass.setUploadtime(getTimeandDate());
 
-                if(!description.getText().toString().isEmpty()){
-                    desc=description.getText().toString();
+                if (!description.getText().toString().isEmpty()) {
+                    desc = description.getText().toString();
                 }
 
                 fclass.setDescc(desc);
@@ -155,13 +182,27 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
                 databaseReference.child(databaseReference.push().getKey()).setValue(fclass);
                 progressDialog.dismiss();
 
+                //for notifications
+                // The topic name can be optionally prefixed with "/topics/".
+                // See documentation on defining a message payload.
+                RemoteMessage message = new RemoteMessage.Builder(topic).addData("Course",course_name).build();
+                // Send a message to the devices subscribed to the provided topic.
+
+                FirebaseMessaging.getInstance().send(
+                        new RemoteMessage.Builder( username+ "@fcm.googleapis.com")
+                                .setMessageId(id+"")
+                                .addData("CourseName", course_name)
+                                .build());
+                id++;
+                // Response is a message ID string.
+                Log.d(TAG, "message: " + message.getData() +" sent");
+                //System.out.println("Successfully sent message: " + message);// + response);
 
                 Toast.makeText(UploadFiles.this, fclass.getName() + " Uploaded!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onFailure(@NonNull Exception e)
-            {
+            public void onFailure(@NonNull Exception e) {
                 // Error, Image not uploaded
                 progressDialog.dismiss();
                 Toast.makeText(UploadFiles.this, "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -175,7 +216,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
                 double progress = (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount());
                 progressDialog.setMessage(
                         "Uploaded "
-                                + (int)progress + "%");
+                                + (int) progress + "%");
             }
 
         });
@@ -191,13 +232,11 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
             case R.id.logoutMenu:
                 mAuth.signOut();
-                Intent login= new Intent(this, Login.class);
+                Intent login = new Intent(this, Login.class);
                 Toast.makeText(this, "Logging Out",
                         Toast.LENGTH_SHORT).show();
                 startActivity(login);
@@ -229,12 +268,12 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
         return result;
     } //from https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
 
-    String getTimeandDate(){
+    String getTimeandDate() {
         // adapted from https://stackoverflow.com/questions/1305350/how-to-get-the-current-date-and-time-of-your-timezone-in-java
         Date date = new Date();
         DateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         df.setTimeZone(TimeZone.getTimeZone("GMT+4:00"));
-        String d="Uploaded on "+df.format(date)+" GST";
+        String d = "Uploaded on " + df.format(date) + " GST";
         return d;
     }
 
@@ -246,5 +285,34 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    //FOR NOTIFICATIONS
+    // Declare the launcher at the top of your Activity/Fragment:
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // FCM SDK (and your app) can post notifications.
+                } else {
+                    // TODO: Inform user that that your app will not show notifications.
+                }
+            });
+    //https://firebase.google.com/docs/cloud-messaging/android/client
+    private void askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ public class app extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Intent intent = new Intent(this, NotificationService.class);
-        startService(intent);
+        /*Intent intent = new Intent(this, NotificationService.class);
+        this.startForegroundService(intent);*/
     }
 }

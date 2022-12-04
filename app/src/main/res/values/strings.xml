@@ -17,4 +17,6 @@
         <item>Older</item>
     </string-array>
 
+    <string name="msg_token_fmt" formatted="true">Token is %s</string>
+
 </resources>
