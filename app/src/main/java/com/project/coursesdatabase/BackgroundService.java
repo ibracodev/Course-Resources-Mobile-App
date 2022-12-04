@@ -54,7 +54,7 @@ public class BackgroundService extends Service {
         // create and start timer
         timer = new Timer(true);
         int delay = 1000 ;
-        int interval = 1000 * 28800; // Every 8 hours
+        int interval = 1000; // Every 8 hours
         timer.schedule(task, delay, interval);
     }
 
@@ -67,7 +67,7 @@ public class BackgroundService extends Service {
     private void sendNotification(String text)
 
     {
-        Intent notificationIntent = new Intent (this , MainActivity.class)
+        Intent notificationIntent = new Intent (this , Login.class)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT ;
@@ -75,7 +75,6 @@ public class BackgroundService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this , 0 ,
                 notificationIntent , PendingIntent.FLAG_IMMUTABLE) ;
 
-        int icon = R.drawable.logoapp ;
         CharSequence tickerText = "Course Resources Available" ;
         CharSequence contentTitle = "View Course Resources" ;
 

@@ -64,7 +64,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
 
-    public void onResume(){x
+    public void onResume(){
 
         super.onResume();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
