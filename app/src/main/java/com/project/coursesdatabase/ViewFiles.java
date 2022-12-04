@@ -2,6 +2,7 @@ package com.project.coursesdatabase;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -36,7 +37,7 @@ import java.text.*;
 //Following reference was used for the parts of code below : https://www.youtube.com/watch?v=axChfqYiZwc
 
 
-public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSelectedListener, SearchView.OnQueryTextListener {
+public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     ListView list;
     DatabaseReference dbref;
     ArrayList<FileClass> files;
@@ -46,18 +47,18 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
     TextView coursename;
     String year = "None"; //random value set as default
     CustomArrayAdapter adapter;
-    SearchView search;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_files);
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.lightgrey));
         list=findViewById(R.id.course_List);
         coursename = findViewById(R.id.courseTitletxt);
         yearSpinner = findViewById(R.id.yearSpin);
-        search = findViewById(R.id.searchView);
-
         Intent intent = getIntent();
         cname=intent.getStringExtra("CourseName");
         getSupportActionBar().setTitle("Viewing Previouses for " + cname);
@@ -75,10 +76,10 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
 
         view_all_files();
 
-        search.setOnQueryTextListener(this);
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
+            //Following reference was used for the parts of code below : https://www.youtube.com/watch?v=axChfqYiZwc
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FileClass f=files.get(position);
 
@@ -92,6 +93,7 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
     }
 
     private void view_all_files(){
+        //Following reference was used for the parts of code below : https://www.youtube.com/watch?v=axChfqYiZwc
         files=new ArrayList<FileClass>();
         dbref= FirebaseDatabase.getInstance().getReference(cname);
         dbref.addValueEventListener(new ValueEventListener() {
@@ -136,12 +138,6 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
                         Toast.LENGTH_SHORT).show();
                 startActivity(login);
                 return true;
-            case R.id.profileMenu:
-                Intent profile = new Intent(this, ProfileActivity.class);
-                startActivity(profile);
-                Toast.makeText(this, "Profile",
-                        Toast.LENGTH_SHORT).show();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -156,17 +152,7 @@ public class ViewFiles extends AppCompatActivity implements AdapterView.OnItemSe
 
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
 
 
-        return false;
-    }
-    //https://stackoverflow.com/questions/21827646/how-to-implement-search-in-custom-listview-in-android
+
 }

@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+    android:foregroundTint="#00BCD4"
     tools:context=".MainActivity">
 
     <TableRow
@@ -11,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10sp"
         android:layout_marginLeft="10sp"
-        android:layout_marginTop="80sp"
+        android:layout_marginTop="70sp"
         android:layout_marginEnd="10sp"
         android:gravity="center">
 
@@ -24,8 +26,22 @@
             android:fontFamily="sans-serif-black"
             android:gravity="center"
             android:text="Select Course From List Below"
-            android:textColor="#000000"
+            android:textColor="@color/material_dynamic_tertiary40"
             android:textSize="24sp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10sp">
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="center"
+            app:srcCompat="@drawable/course_icon" />
     </TableRow>
 
     <TableRow
@@ -56,14 +72,15 @@
 
         <TextView
             android:id="@+id/cname"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_span="1"
             android:layout_weight="1"
-            android:fontFamily="sans-serif-black"
+            android:fontFamily="sans-serif-condensed-medium"
             android:text="Enter Course Name"
-            android:textColor="#000000" />
+            android:textColor="@color/material_dynamic_tertiary40"
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/c_name_field"
@@ -73,6 +90,7 @@
             android:layout_marginEnd="10sp"
             android:layout_span="1"
             android:layout_weight="1"
+            android:width="400sp"
             android:gravity="center"
             android:inputType="textPersonName" />
     </TableRow>
@@ -81,38 +99,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="10sp"
-        android:layout_marginLeft="10sp"
-        android:layout_marginTop="20sp"
-        android:layout_marginEnd="10sp">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_span="1"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-black"
-            android:text="Enter Previous Description"
-            android:textColor="#000000" />
-
-        <EditText
-            android:id="@+id/desc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10sp"
-            android:layout_marginEnd="10sp"
-            android:layout_weight="1"
-            android:ems="15"
-            android:inputType="textPersonName" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10sp"
-        android:layout_marginLeft="10sp"
-        android:layout_marginTop="40sp"
+        android:layout_marginTop="30sp"
         android:layout_marginEnd="10sp"
         android:gravity="center">
 
@@ -130,11 +117,11 @@
                 android:layout_marginEnd="10sp"
                 android:layout_span="1"
                 android:layout_weight="1"
-                android:background="#8BC34A"
-                android:fontFamily="sans-serif-black"
-                android:padding="8sp"
+                android:fontFamily="sans-serif-smallcaps"
                 android:text=" Upload Previous"
-                android:textSize="12sp" />
+                android:textColor="@color/material_dynamic_tertiary40"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btn_d"
@@ -145,11 +132,11 @@
                 android:layout_marginEnd="10sp"
                 android:layout_span="1"
                 android:layout_weight="1"
-                android:background="#E91E63"
-                android:fontFamily="sans-serif-black"
-                android:padding="8sp"
-                android:text="Download or View"
-                android:textSize="12sp" />
+                android:fontFamily="sans-serif-smallcaps"
+                android:text="View Previous"
+                android:textColor="@color/material_dynamic_tertiary40"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </TableRow>

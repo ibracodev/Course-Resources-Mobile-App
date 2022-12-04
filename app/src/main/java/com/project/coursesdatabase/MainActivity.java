@@ -1,8 +1,9 @@
 package com.project.coursesdatabase;
-// Parts of the Code Adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference databaseReference;
 
     Button btn_upload,btn_download;
-    EditText c_name_field,descc;
+    EditText c_name_field;
     Spinner courseListSpinner;
     TableRow r;
 
@@ -70,30 +72,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
-
-
-
-
         setContentView(R.layout.activity_main);
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.lightgrey));
 
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
-
-
         username=user.getEmail().toString();
         getSupportActionBar().setTitle("Welcome: " + username);
         db = FirebaseFirestore.getInstance();
 
         btn_upload = findViewById(R.id.btn_upload);
         btn_download=findViewById(R.id.btn_d);
-        courseListSpinner=findViewById(R.id.courses_list);
+
 
         r=findViewById(R.id.course_row);
         c_name_field=findViewById(R.id.c_name_field);
-        descc=findViewById(R.id.desc);
+
         //Database
         storageReference = FirebaseStorage.getInstance().getReference();
         databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
@@ -101,7 +100,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_upload.setOnClickListener(this);
         btn_download.setOnClickListener(this);
 
-        settingSpinner();
+
+        courseListSpinner=findViewById(R.id.courses_list);
+        CourseNames = new ArrayList<String>();
+        courseListSpinner.setAdapter(null);
 
 
         Log.d(TAG, "on create" );
@@ -112,23 +114,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onResume(){
-
+        Log.d("bla","Onresume called");
         super.onResume();
         CourseNames = new ArrayList<String>();
         courseListSpinner.setAdapter(null);
         settingSpinner();
     }
     public void onPause(){
+        Log.d("bla","Onpause called");
         super.onPause();
         courseListSpinner.setAdapter(null);
     }
 
 
     public void settingSpinner(){
+        //source https://stackoverflow.com/questions/52715924/how-i-can-get-list-of-name-of-folder-in-firebase-storage-android
+        CourseNames = new ArrayList<String>();
         courseListSpinner.setAdapter(null);
         StorageReference listRef = FirebaseStorage.getInstance().getReference("/");
 
-        //source https://stackoverflow.com/questions/52715924/how-i-can-get-list-of-name-of-folder-in-firebase-storage-android
+
         listRef.listAll()
                 .addOnSuccessListener(new OnSuccessListener<ListResult>() {
                     @Override
@@ -153,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // Uh-oh, an error occurred!
+                        Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -188,12 +193,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.LENGTH_SHORT).show();
                 startActivity(login);
                 return true;
-            case R.id.profileMenu:
-                Intent profile = new Intent(this, ProfileActivity.class);
-                startActivity(profile);
-                Toast.makeText(this, "Profile",
-                        Toast.LENGTH_SHORT).show();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -205,42 +204,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //upload button
         if (view.getId()== R.id.btn_upload){
             int n=courseListSpinner.getAdapter().getCount();
-
-            if(courseListSpinner.getSelectedItemPosition()==n-1){
+            if(r.getVisibility()==View.VISIBLE && c_name_field.getText().toString().isEmpty() && courseListSpinner.getSelectedItemPosition()==n-1){
+                Toast.makeText(MainActivity.this, "Course Name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+            else if(r.getVisibility()==View.VISIBLE && !c_name_field.getText().toString().isEmpty() && courseListSpinner.getSelectedItemPosition()==n-1){
                 course_name=c_name_field.getText().toString();
+                Intent uploadIntent = new Intent(this, UploadFiles.class);
+                uploadIntent.putExtra("CourseName", course_name);
+                uploadIntent.putExtra("Username", username);
+                startActivity(uploadIntent);
             }
             else {
                 course_name = courseListSpinner.getSelectedItem().toString();
+                Intent uploadIntent = new Intent(this, UploadFiles.class);
+                uploadIntent.putExtra("CourseName", course_name);
+                uploadIntent.putExtra("Username", username);
+                startActivity(uploadIntent);
             }
-            //databaseReference = FirebaseDatabase.getInstance().getReference(course_name);
-            Intent uploadIntent = new Intent(this, UploadFiles.class);
-            uploadIntent.putExtra("CourseName", course_name);
-            uploadIntent.putExtra("Username", username);
-            startActivity(uploadIntent);
-            //selectFiles();
+
+
+
         }
         if (view.getId()== R.id.btn_d){
             int n=courseListSpinner.getAdapter().getCount();
-
-            if(courseListSpinner.getSelectedItemPosition()==n-1){
+            if(r.getVisibility()==View.VISIBLE && c_name_field.getText().toString().isEmpty() && courseListSpinner.getSelectedItemPosition()==n-1){
+                Toast.makeText(MainActivity.this, "Course Name cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+            else if(r.getVisibility()==View.VISIBLE && !c_name_field.getText().toString().isEmpty() && courseListSpinner.getSelectedItemPosition()==n-1)
+            {
                 course_name=c_name_field.getText().toString();
+                Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
+                intent.putExtra("CourseName",course_name);
+                startActivity(intent);
             }
             else {
                 course_name = courseListSpinner.getSelectedItem().toString();
+                Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
+                intent.putExtra("CourseName",course_name);
+                startActivity(intent);
             }
-            Intent intent=new Intent(getApplicationContext(),ViewFiles.class);
-            intent.putExtra("CourseName",course_name);
-            startActivity(intent);
+
 
         }
     }
-
-
-
-
-
-
-
 
 
     @Override

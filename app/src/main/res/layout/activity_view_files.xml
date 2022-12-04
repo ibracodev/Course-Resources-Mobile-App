@@ -20,7 +20,7 @@
               android:gravity="center"
               android:paddingBottom="10sp"
               android:text="TextView"
-              android:textColor="#000000"
+              android:textColor="@color/material_dynamic_tertiary40"
               android:textSize="24sp" />
      </TableRow>
 
@@ -34,9 +34,9 @@
               android:id="@+id/textView2"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:fontFamily="sans-serif-black"
+              android:fontFamily="sans-serif-condensed-medium"
               android:text="Select the Year"
-              android:textColor="#000000"
+              android:textColor="@color/material_dynamic_tertiary40"
               android:textSize="20sp" />
 
           <Spinner
@@ -44,17 +44,6 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content" />
 
-     </TableRow>
-
-     <TableRow
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:gravity="center">
-
-          <SearchView
-              android:id="@+id/searchView"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent" />
      </TableRow>
 
      <TableRow

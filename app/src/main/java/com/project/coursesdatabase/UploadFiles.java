@@ -3,6 +3,7 @@ package com.project.coursesdatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -40,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+// Parts of the Code Adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
 public class UploadFiles extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
     Spinner years;
@@ -56,8 +58,10 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_files);
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.lightgrey));
 
         years = findViewById(R.id.year_spinner);
         upload = findViewById(R.id.uploadButton);
@@ -87,11 +91,17 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.uploadButton){
-            selectFiles();
+            if(description.getText().toString().isEmpty()){
+                Toast.makeText(UploadFiles.this, "Course Description cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                selectFiles();
+            }
         }
     }
 
     public void selectFiles(){
+        // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         //opens the file manager on your phone to select and upload files
         Intent intent = new Intent();
         intent.setType("*/*");
@@ -102,6 +112,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     //when files are selected the upload function is called
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
@@ -112,6 +123,7 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
     //upload function
     @SuppressLint("NotConstructor")
     public void UploadFiles(Uri data){
+        // Parts of this section adapted from https://www.youtube.com/watch?v=lmJHtSChZG0
         Log.d("UPLOAD FILE", data.getPath());
 
         //displays progress of the upload to the user
@@ -189,12 +201,6 @@ public class UploadFiles extends AppCompatActivity implements View.OnClickListen
                 Toast.makeText(this, "Logging Out",
                         Toast.LENGTH_SHORT).show();
                 startActivity(login);
-                return true;
-            case R.id.profileMenu:
-                Intent profile = new Intent(this, ProfileActivity.class);
-                startActivity(profile);
-                Toast.makeText(this, "Profile",
-                        Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -15,15 +15,16 @@
             android:layout_margin="5sp">
 
             <TextView
-                android:id="@+id/doctitle"
+                android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="1"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:text="TextView"
-                android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textColor="@color/material_dynamic_neutral30"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
         </TableRow>
 
@@ -33,14 +34,15 @@
             android:layout_margin="5sp">
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/doctitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="1"
                 android:layout_weight="1"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:text="TextView"
                 android:textColor="#000000"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
         </TableRow>
 
         <TableRow
@@ -55,6 +57,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:text="TextView"
                 android:textColor="#000000"
                 android:textSize="12sp" />
@@ -71,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:text="TextView"
                 android:textColor="#000000"
                 android:textSize="12sp" />
